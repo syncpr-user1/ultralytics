@@ -1,7 +1,7 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 # YOLO Continuous Integration (CI) GitHub Actions tests
 
-name: pytest_default_order
+name: random_order
 
 on:
   push:
@@ -209,7 +209,7 @@ jobs:
               pip install mlflow pycocotools "ray[tune]<=2.9.3"
               slow="--slow"
           fi
-          pytest -v --durations=0 $slow --cov=ultralytics/ --cov-report xml tests/ -o cache_dir=.tmp
+          pytest -v --durations=0 $slow --cov=ultralytics/ --cov-report xml tests/ --rank --rank-weight=0-0-0 -o cache_dir=.tmp
       - name: Save pytest-ranking cache
         id: save-pytest-ranking-cache
         if: always()
