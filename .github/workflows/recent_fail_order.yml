@@ -189,8 +189,6 @@ jobs:
           pip install -e . $torch pytest-cov "coremltools>=7.0; platform_system != 'Windows' and python_version <= '3.11'" --extra-index-url https://download.pytorch.org/whl/cpu
       - name: Install pytest-ranking
         run: pip install pytest-ranking
-      - name: Install pytest-rerunfailures
-        run: pip install pytest-rerunfailures
       - name: Check environment
         run: |
           yolo checks
@@ -211,7 +209,7 @@ jobs:
               pip install mlflow pycocotools "ray[tune]<=2.9.3"
               slow="--slow"
           fi
-          pytest -v --durations=0 --reruns 5 $slow --cov=ultralytics/ --cov-report xml tests/ --rank --rank-weight=0-1-0 -o cache_dir=.tmp
+          pytest -v --durations=0 $slow --cov=ultralytics/ --cov-report xml tests/ --rank --rank-weight=0-1-0 -o cache_dir=.tmp
       - name: Save pytest-ranking cache
         id: save-pytest-ranking-cache
         if: always()
