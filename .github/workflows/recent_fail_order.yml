@@ -187,8 +187,8 @@ jobs:
               torch="torch==1.8.0 torchvision==0.9.0"
           fi
           pip install -e . $torch pytest-cov "coremltools>=7.0; platform_system != 'Windows' and python_version <= '3.11'" --extra-index-url https://download.pytorch.org/whl/cpu
-      - name: Install pytest-ranking
-        run: pip install pytest-ranking
+      - name: Install pytest-ranking related
+        run: pip install pytest-ranking pytest-json-report
       - name: Check environment
         run: |
           yolo checks
@@ -209,7 +209,7 @@ jobs:
               pip install mlflow pycocotools "ray[tune]<=2.9.3"
               slow="--slow"
           fi
-          pytest -v --durations=0 $slow --cov=ultralytics/ --cov-report xml tests/ --rank --rank-weight=0-1-0 -o cache_dir=.tmp
+          pytest -v --durations=0 --json-report --json-report-file=./test-report.json $slow --cov=ultralytics/ --cov-report xml tests/ --rank --rank-weight=0-1-0 -o cache_dir=.tmp
       - name: Save pytest-ranking cache
         id: save-pytest-ranking-cache
         if: always()
@@ -217,7 +217,12 @@ jobs:
         with:
           path: ${{ github.workspace }}/.tmp/v/pytest_ranking_data
           key: pytest-ranking-cache-${{ github.workflow }}-${{ runner.os }}-${{ matrix.python }}-${{ github.run_id }}
-
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+            name: pytest-ranking upload test report json
+            path: |
+              ./test-report.json
   #     - name: Upload Coverage Reports to CodeCov
   #       if: github.repository == 'ultralytics/ultralytics' # && matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
   #       uses: codecov/codecov-action@v4
